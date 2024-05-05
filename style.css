@@ -1,0 +1,115 @@
+html, body {
+    width: 1668px;
+    height: 2388px;
+    background-color: white;
+    margin: 0.5%;
+    padding: 0.5;
+}
+
+  .forest{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/forest.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+  }
+
+  .minusTwo{width: 85px;}
+  .nykthos{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/nykthos.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+  }
+
+  .itlimoc{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/itlimoc.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+  }
+
+  .elvishGuidance{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background-image: url("./images/elvish_guidance.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+  }
+
+
+.doubleCubePerm{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/doubling_cube.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+}
+
+.selvalaMana{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/selvala.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+}
+
+.tanukiMana{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/tanuki.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+}
+
+.dreamDruidMana{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/dreams_druid.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+}
+
+.marwynMana{
+    aspect-ratio: 5 / 7;
+    padding: none;
+    border: none;
+    width: 85px;
+    background: #7986cb;
+    color: floralwhite;  
+    background-image: url("./images/marwyn.png");
+    background-repeat: no-repeat;
+    background-size:100% 100%;
+}
