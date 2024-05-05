@@ -1,0 +1,556 @@
+<html>
+    <head>
+        <title>Omnath, Locus of Mana</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+        <link rel="stylesheet" href="style.css">
+        <script>
+            var elves = 0;
+            var tempMana = 0;
+            var mana = 0;
+            var devotion = 0;
+            var creatures = 0;
+            var marwynPwrTgh = 1;
+            var omnathPwr = mana+1;
+            var omnathTgh = mana+1;
+            var plusOnePwr = 0; var plusOneTgh = 0;
+            var minusOnePwr = 0; var minusOneTgh = 0;
+            var turn = 1;
+
+            var seedbornMuseActive = false; // Untap all permanents each untap step.
+            var userInput = -1;
+            var functionId = 0;
+            var seedbornMuseActions = 0;
+            var seedbornMuseHistory = [];
+
+            // Lands
+            var vorinclex = false;         // +1 for lands.
+            var cagedSun = false;          // +1 for lands.
+            var vernalBloom = false;       // +1 for forests.
+            var yavimaya = false           // ^^ Changes all lands into forests. (See Vernal Bloom)
+            var zendikarResurgent = false; // +1 for lands.
+            var virtueOfStrength = false;  // +3 for basic lands.
+
+            // Permanents
+            var manaReflection = false;    // x2 for tapping permanents.
+            var nyxbloomAncient = false;   // x3 for tapping permanents.
+            
+            
+            function increaseTurn(){turn++;document.getElementById("displayTurn").textContent = turn;}
+            function resetTurn(){turn = 1;document.getElementById("displayTurn").textContent = turn;}
+
+            function seedbornReset(){
+                seedbornMuseHistory = [];
+                seedbornMuseActions = 0;
+                document.getElementById("displayMuseActions").textContent = "0";
+            }
+
+            function seedbornMuseOnOff(){ // Set Seedborn Muse active to record a single turn to repeat.
+                if(seedbornMuseActive == false){seedbornMuseActive = true; document.getElementById("displayMuse").textContent = "Active";}
+                else{seedbornMuseActive = false; document.getElementById("displayMuse").textContent = "Disabled";}
+            }
+
+            function seedbornMuseCollect(userInput){ // When user asks, records the actions done in a single turn to repeat each other players turn with SeedbornMuse
+                if(seedbornMuseActive == false){return;} // If Seedborn Muse is not active no need to record anything.
+                seedbornMuseHistory.push(userInput);
+                seedbornMuseActions++;
+                document.getElementById("displayMuseActions").textContent = seedbornMuseActions;
+                }
+
+            function seedbornMuseRead(){
+                for (var i = 0; i < seedbornMuseHistory.length; i++){
+                    findFunctionID(seedbornMuseHistory[i]);
+                }
+            }
+
+            function findFunctionID(functionId){
+                switch(functionId){
+                    case 0:addManaForest();break;
+                    case 1:addOneManaPermanent();break;
+                    case 2:addTwoManaPermanent();break;
+                    case 3:addElvesMana();break;
+                    case 4:removeOneMana();break;
+                    case 5:removeTwoMana();break;
+                    case 6:removeThreeMana();break;
+                    case 7:doubleCube();break;
+                    case 8:dreamDruid();break;
+                    case 9:addElf();break;
+                    case 10:selvala();break;
+                    case 11:addDevotionMana();break;
+                    case 12:elvishGuidance();break;
+                    case 13:marwynMana();break;
+                    case 14:nykthos();break;
+                    case 14:itlimoc();break;
+                    default:
+                        break;
+                }
+            }
+
+            // #### Checkboxes ####
+            function checkVorinclex(){
+                let checkboxVorin = document.getElementById("vorinclexBox");
+                if(checkboxVorin.checked){vorinclex = true;}
+                else{vorinclex = false;}}
+            function checkCagedSun(){
+                let checkboxCaged = document.getElementById("cagedSunBox");
+                if(checkboxCaged.checked){cagedSun = true;}
+                else{cagedSun= false;}}
+            function checkVernalBloom(){
+                let checkboxBloom = document.getElementById("vernalBloomBox");
+                if(checkboxBloom.checked){vernalBloom = true;}
+                else{vernalBloom = false;}}
+            function checkYavimaya(){
+                let checkboxYavimaya = document.getElementById("yavimayaBox");
+                if(checkboxYavimaya.checked){yavimaya = true;}
+                else{yavimaya = false;}}
+            function checkManaReflection(){
+                let checkboxReflection = document.getElementById("manaReflectionBox");
+                if(checkboxReflection.checked){manaReflection = true;}
+                else{manaReflection = false;}}
+            function checkZendikarResurgent(){
+                let checkboxResurgent = document.getElementById("zendikarResurgentBox");
+                if(checkboxResurgent.checked){zendikarResurgent = true;}
+                else{zendikarResurgent = false;}}
+            function checkNyxbloomAncient(){
+                let checkboxNyxbloom= document.getElementById("nyxbloomAncientBox");
+                if(checkboxNyxbloom.checked){nyxbloomAncient = true;}
+                else{nyxbloomAncient = false;}}
+            function checkVirtueOfStrenth(){
+                let checkboxVirtue = document.getElementById("virtueOfStrengthBox");
+                if(checkboxVirtue.checked){virtueOfStrength = true;}
+                else{virtueOfStrength = false;}}
+
+            // #### Adding/Removing Elves & Creatures ####
+            function addElf() { // +1 to elves & +1 to creatures.
+                elves++;creatures++;
+                document.getElementById("displayElves").textContent = elves;
+                document.getElementById("displayCreatures").textContent = creatures;}
+            function removeElf(){ // -1 to elves & -1 to creatures.
+                if(elves < 1){return;} // Cannot go below 0.
+                elves--;creatures--;
+                document.getElementById("displayElves").textContent = elves;
+                document.getElementById("displayCreatures").textContent = creatures;}
+            function clearElves(){ // Clear elves.
+                minusElves(elves); // Function removes number of elves from total creatures.
+                elves = 0;
+                document.getElementById("displayElves").textContent = elves;}
+            function minusElves(elfNum){ // Called by 'clearElves'.
+                creatures -= elfNum;     // Removes number of elves from total creatures.
+                document.getElementById("displayCreatures").textContent = creatures;}
+            function addCreature(){ // +1 creatures.
+                creatures++;
+                document.getElementById("displayCreatures").textContent = creatures;}
+            function removeCreature(){ // -1 creatures.
+                if(creatures < 1){return;} // Cannot go below 0.
+                if(creatures <= elves){return;} // Total creatures cannot go below total elves.
+                creatures--;
+                document.getElementById("displayCreatures").textContent = creatures;}
+            function clearCreatures(){ // Clear creatures.
+                if(creatures==elves){return;}
+                creatures = 0;
+                creatures += elves;   // Adds elves back to creature pool.
+                document.getElementById("displayCreatures").textContent = creatures;}
+
+            // #### Un-Modded Mana ####
+            function addOneManaDefault(){ // Emergency add one mana. No modifiers
+                mana++;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +1 Omnath power/toughness.
+            function addTwoManaDefault(){ // +2 mana. No modifiers.
+                mana += 2;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +2 Omnath power/toughness.
+            function elvishGuidance(){ // +X mana, X = number of elves in play. No modifiers.
+                mana += elves;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = number of elves in play.
+
+            // ####################################
+            // #### Mana adders for lands only ####
+            // ####################################
+            function addManaForest(){ // Add one mana for basic forest.
+                tempMana++
+                if(vorinclex){tempMana++;}
+                if(cagedSun){tempMana++;}
+                if(vernalBloom){tempMana++;}
+                if(zendikarResurgent){tempMana++}
+                if(manaReflection){tempMana*=2;}
+                if(virtueOfStrength){tempMana*=3}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +1 Omnath power/toughness.
+            function nykthos(){ // Adds X mana, X = devotion to green.
+                tempMana += devotion;
+                if(yavimaya&&vernalBloom){tempMana++;}
+                if(vorinclex){tempMana++;}
+                if(cagedSun){tempMana++;}
+                if(zendikarResurgent){tempMana++}
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = # of devotion.
+            function itlimoc(){ // Add X mana, X = # of creatures.
+                tempMana += creatures;
+                if(yavimaya&&vernalBloom){tempMana++;}
+                if(vorinclex){tempMana++;}
+                if(cagedSun){tempMana++;}
+                if(zendikarResurgent){tempMana++}
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = # of creatures.
+
+            // #############################################
+            // #### Mana adders for non-land permanents ####
+            // #############################################
+            function addOneManaPermanent(){ // +1 mana for non-land permanent.
+                tempMana++
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // ++Omnath power/toughness.
+            function addTwoManaPermanent(){ // +2 mana for non-land permanent.
+                tempMana += 2;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();}// ++Omnath power/toughness.
+            function addElvesMana(){ // +X mana, X = # of elves.
+                tempMana += elves;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = # of elves.
+            function addDevotionMana(){ // +X mana, X = devotion.
+                tempMana += devotion;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = # of devotion.
+            function selvala(){ // +X mana, X = Omnath's power.
+                if(mana < 1){window.alert("Cannot Activate Selvala.");return;}
+                tempMana = omnathPwr;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = greatest power among creatures you control.
+            function dreamDruid(){ // +X mana, X = # of creatures.
+                tempMana += creatures;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omanth power/toughness, X = # of creatures.
+            function tanuki(){ // +X mana, X = Omnath's power.
+                tempMana = mana + omnathPwr;
+                mana = tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = Omnath's power when attacking.
+            function doubleCube(){ // +X mana, X = mana in mana pool.
+                tempMana = mana * 2;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana = tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = total mana in mana pool.
+            function marwynMana(){ // +X mana, X = Marwyn's power.
+                tempMana += marwynPwrTgh;
+                if(manaReflection){tempMana*=2;}
+                if(nyxbloomAncient){tempMana*=3;}
+                mana += tempMana;
+                tempMana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // +X Omnath power/toughness, X = Marwyn's power.
+            function addMarwyn(){
+                marwynPwrTgh++;
+                document.getElementById("displayMarwyn").value = marwynPwrTgh;}
+            function subtractMarwyn(){
+                if(marwynPwrTgh<2){return;}
+                marwynPwrTgh--;
+                document.getElementById("displayMarwyn").value = marwynPwrTgh;}
+            function resetMarwyn(){
+                marwynPwrTgh = 1;
+                document.getElementById("displayMarwyn").value = marwynPwrTgh;}
+
+            // #############################################
+            // ############### Removing mana ###############
+            // #############################################
+            function removeOneMana(){ // -1 mana.
+                if(mana <= 0){mana=0;return;}
+                mana--;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();}// -1 Omnath power/toughness.
+            function removeTwoMana(){ // -2 mana.
+                if(mana <= 1){mana=0;document.getElementById("displayMana").value = mana;omnathStats();return;} // If less than 1 mana, set mana to 0.
+                mana -= 2;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // -2 Omnath power/toughness.
+            function removeThreeMana(){ // -3 mana.
+                if(mana <= 2){mana=0;document.getElementById("displayMana").value = mana;omnathStats();return;} // If less than 2 mana, set mana to 0.
+                mana -= 3;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // -3 Omnath power/toughness.
+            function removeFourMana(){ // -4 mana.
+                if(mana <= 3){mana=0;document.getElementById("displayMana").value = mana;omnathStats();return;} // If less than 3 mana, set mana to 0.
+                mana -= 4;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // -4 Omnath power/toughness.
+            function removeFiveMana(){ // -5 mana.
+                if(mana <= 4){mana=0;document.getElementById("displayMana").value = mana;omnathStats();return;} // If less than 5 mana, set mana to 0.
+                mana -= 5;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // -4 Omnath power/toughness.
+            function removeTenMana(){ // -10 mana.
+                if(mana <= 9){mana=0;document.getElementById("displayMana").value = mana;omnathStats();return;} // If less than 9 mana, set mana to 0.
+                mana -= 10;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();} // -10 Omnath power/toughness.
+            function resetMana(){ // Set mana pool to 0 :(
+                mana = 0;
+                document.getElementById("displayMana").value = mana;
+                omnathStats();}// Sets Omnath power/toughness to default.
+            
+            // #############################################
+            // ############# Devotion tracker ##############
+            // #############################################
+            function addOneDevotion(){ // +1 devotion.
+                devotion++;document.getElementById("displayDevotion").textContent = devotion;}
+            function addTwoDevotion(){ // +2 devotion.
+                devotion += 2;document.getElementById("displayDevotion").textContent = devotion;}
+            function addThreeDevotion(){ // +3 devotion.
+                devotion += 3;document.getElementById("displayDevotion").textContent = devotion;}
+            function removeOneDevotion(){ // -1 devotion.
+                if(devotion <= 0){return;}
+                devotion--;document.getElementById("displayDevotion").textContent = devotion;}
+            function removeTwoDevotion(){ // -2 devotion.
+                if(devotion <= 1){return;}
+                devotion -= 2;document.getElementById("displayDevotion").textContent = devotion;}
+            function removeThreeDevotion(){ // -3 devotion.
+                if(devotion <= 2){return;}
+                devotion -= 3;document.getElementById("displayDevotion").textContent = devotion;}
+            function resetDevotion(){ // Set devotion to 0.
+                devotion = 0;document.getElementById("displayDevotion").textContent = devotion;}
+
+            // #### Other ####
+            function clearing(){ // Clearing everything.
+                seedbornMuseActive = false;seedbornMuseHistory = []; // Deactivates Seedborn Muse and erases the Seedborn Muse array.
+                elves=0;devotion=0;creatures=0;marwynPwrTgh=1;  // Reset all variables to 0.
+                document.getElementById("displayElves").textContent = elves;
+                document.getElementById("displayCreatures").textContent = creatures;
+                document.getElementById("displayPwr").textContent = 0;
+                document.getElementById("displayTgh").textContent = 0;
+                document.getElementById("displayMuse").textContent = "Inactive";
+                document.getElementById("displayMuseActions").textContent = 0;
+                resetMana();clearPwr();clearTgh();clearPwrTgh();
+                resetDevotion();resetMarwyn();omnathStats();resetTurn();}
+
+            // #### Omnath tracker ####
+            function omnathStats(){ // Keeps track of Omnath's power including mana, counters, and buffs.
+                omnathPwr = 1 + mana + plusOnePwr + minusOnePwr; 
+                omnathTgh = 1 + mana + plusOneTgh + minusOneTgh;
+                document.getElementById("displayPwr").textContent = omnathPwr;
+                document.getElementById("displayTgh").textContent = omnathTgh;}
+            function omnathPwrPlus(){plusOnePwr++;omnathStats();} // (+1/+0).
+            function omnathTghPlus(){plusOneTgh++;omnathStats();} // (+0/+1).
+            function omnathPwrMinus(){plusOnePwr--;omnathStats();} // (-1/+0).
+            function omnathTghMinus(){plusOneTgh--;omnathStats();} // (+0/-1).
+            function omnathPlus(){omnathPwrPlus();omnathTghPlus();omnathStats();} // (+1/+1).
+            function omnathMinus(){omnathPwrMinus();omnathTghMinus();omnathStats();} // (-1/-1).
+            function clearPwr(){plusOnePwr=0;omnathStats();} // Resets power counters & buffs.
+            function clearTgh(){plusOneTgh=0;omnathStats();} // Resets toughness counters & buffs.
+            function clearPwrTgh(){plusOnePwr=0;plusOneTgh=0;omnathStats();} // Resets both power and toughness counters & buffs.
+        </script>
+    </head>
+
+
+
+
+
+
+        <span>turn: </span>
+        <span id="displayTurn">1</span>
+        <button onclick="increaseTurn();">↑</button>
+        <button onclick="resetTurn();">↻</button>
+        
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-4">
+                <table class="pure-table pure-table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Type</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span id="displayElves">0</span></td>
+                            <td>Elves</td>
+                            <td><button onclick="addElf();seedbornMuseCollect(9);">↑</button></td>
+                            <td><button onclick="removeElf();">↓</button></td>
+                            <td><button onclick="clearElves();">↻</button></td>
+                        </tr>
+                        <tr>
+                            <td><span id="displayCreatures">0</span></td>
+                            <td>Creatures</td>
+                            <td><button onclick="addCreature();">↑</button></td>
+                            <td><button onclick="removeCreature();">↓</button></td>
+                            <td><button onclick="clearCreatures();">↻</button></td>
+                        </tr>
+                        <tr>
+                            <td><span id="displayDevotion">0</span></td>
+                                <td>Devotion</td>
+                                <td><button onclick="addOneDevotion();">+1</button><br/>
+                                    <button onclick="addTwoDevotion();">+2</button><br/>
+                                    <button onclick="addThreeDevotion();">+3</button></td>
+
+                                <td><button onclick="removeOneDevotion();">-1</button><br/>
+                                    <button onclick="removeTwoDevotion();">-2</button><br/>
+                                    <button onclick="removeThreeDevotion();">-3</button><br/></td>
+                                <td><button onclick="resetDevotion();">↻</button></td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pure-u-1 pure-u-md-1-8"><p><b><font size="+2">Mana</font></b></p>
+                <button onclick="addOneManaDefault();"style="width:115px;">+1 Default</button><br/>
+                <button onclick="addTwoManaDefault();"style="width:115px">+2 Default</button><br/>
+                <input type="text" size="9" name="manaTextBox" id="displayMana" value="0"/><br/>
+                <button onclick="removeOneMana();seedbornMuseCollect(4);"style="width:35px">-1</button>
+                <button onclick="removeTwoMana();seedbornMuseCollect(5);"style="width:35px">-2</button>
+                <button onclick="removeThreeMana();seedbornMuseCollect(6);"style="width:35px">-3</button><br/>
+                <button onclick="removeFourMana();"style="width:35px">-4</button>
+                <button onclick="removeFiveMana();"style="width:35px">-5</button>
+                <button onclick="removeTenMana();"style="width:35px;text-align:left;font-size:16px">-10</button><br/><br/><br/>
+                <button onclick="resetMana();"style="width:115px;">↻</button>
+            </div>
+            
+            <div class="pure-u-1 pure-u-md-1-8"><p><b><font size="+2">Permanents</font></b></p>
+                <button onclick="addOneManaPermanent();seedbornMuseCollect(1)" style="height:50px;width:50px;vertical-align:middle">
+                    <img  src="./images/forestManaSymbols.png" width="30px" height="30px"/>
+                </button>
+                <button onclick="addTwoManaPermanent();seedbornMuseCollect(2)" style="height:50px;width:85px;vertical-align:middle">
+                    <img  src="./images/forestManaSymbols.png" width="30px" height="30px"/>
+                    <img  src="./images/forestManaSymbols.png" width="30px" height="30px"/>
+                </button><br/>
+                <button onclick="addElvesMana();seedbornMuseCollect(3);"style="height:50px;width:50px;text-align:left">Elves</button>
+                <button onclick="addDevotionMana();seedbornMuseCollect(11);"style="height:50px;width:85px;text-alignleft">Devotion</button><br/>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button onclick="removeThreeMana();seedbornMuseCollect(6);"style="height:25px;width:85px;vertical-align:bottom;">-3</button><br/>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button class="doubleCubePerm" onclick="doubleCube();seedbornMuseCollect(7);"></button>
+            </div>
+
+            <div class="pure-u-1 pure-u-md-1-8"><br/><b><font size="+2">Lands</font></b></p>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button class="minusTwo" onclick="removeTwoMana();seedbornMuseCollect(5);">-2</button><br/>
+                <button class="forest" onclick="addManaForest();seedbornMuseCollect(0);" id="forestButton"></button>
+                <button class="nykthos" onclick="nykthos();seedbornMuseCollect(14);"></button><br/>
+                <button class="itlimoc" onclick="itlimoc();seedbornMuseCollect(15);"></button>
+                <button class="elvishGuidance" onclick="elvishGuidance();seedbornMuseCollect(12)"></button>
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-6"><b><font size="+2">Creatures</font></b></p>
+                <button class="selvalaMana" onclick="selvala();seedbornMuseCollect(10);"></button>
+                <button class="tanukiMana" onclick="tanuki();"></button><br/>
+                <button class="dreamDruidMana" onclick="dreamDruid();seedbornMuseCollect(8)"></button>
+                <button class="marwynMana" onclick="marwynMana();"></button><br/>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button onclick="addMarwyn();" style="width:25px;height:25px;vertical-align:top;">+</button>
+                <input type="text" name="marwynTheNurturer" id="displayMarwyn" value="1" style="width:85px;vertical-align:top;"/><br/>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button onclick="subtractMarwyn();" style="width:25px;height:25px;vertical-align:top;">-</button>
+                <button onclick="resetMarwyn();" style="width:85px;height:25px;vertical-align:top;">↻</button><br/><br/>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button onclick="clearing();">Clear All</button>
+            </div>
+                
+            <div class="pure-u-1 pure-u-md-1-6"><b><font size="+2">Effects</font></b></p>
+                <input type="checkbox" id="vorinclexBox" name="vorinclexBox" onchange = "checkVorinclex()">
+                <label for="vorinclexBox">Vorinclex, Voice of Hunger</label><br/>
+
+                <input type="checkbox" id="cagedSunBox" name="cagedSunBox" onchange = "checkCagedSun()">
+                <label for="cagedSunBox">Caged Sun</label><br/>
+
+                <input type="checkbox" id="vernalBloomBox" name="vernalBloomBox" onchange = "checkVernalBloom()">
+                <label for="vernalBloomBox">Vernal Bloom</label><br/>
+
+                <input type="checkbox" id="manaReflectionBox" name="manaReflectionBox" onchange = "checkManaReflection()">
+                <label for="manaReflectionBox">Mana Reflection</label><br/>
+
+                <input type="checkbox" id="zendikarResurgentBox" name="zendikarResurgentBox" onchange = "checkZendikarResurgent()">
+                <label for="zendikarResurgentBox">Zendikar Resurgent</label><br/>
+
+                <input type="checkbox" id="yavimayaBox" name="yavimayaBox" onchange = "checkYavimaya()">
+                <label for="yavimayaBox">Yavimaya, Cradle of Growth</label><br/>
+
+                <input type="checkbox" id="nyxbloomAncientBox" name="nyxbloomAncientBox" onchange = "checkNyxbloomAncient()">
+                <label for="nyxbloomAncientBox">Nyxbloom Ancient</label><br/>
+
+                <input type="checkbox" id="virtueOfStrengthBox" name="virtueOfStrengthBox" onchange = "checkVirtueOfStrenth()">
+                <label for="virtueOfStrengthBox">Virtue of Strength</label><br/><br/>
+
+                <label for="seedbornMuse">Seedborn Muse: </label><br/>
+                <span id="displayMuse">Inactive</span>
+                <label for="seedbornMuse">Muse Actions: </label>
+                <span id="displayMuseActions">0</span>
+                <button onclick="seedbornMuseOnOff();">Active/Inactive</button>
+                <button onclick="seedbornMuseRead();">Repeat</button>
+                <button onclick="seedbornReset();">↻</button>
+            </div>
+
+            <div class="pure-u-1 pure-u-md-1-6"><b><font size="+2">Omnath</font></b></p>
+                <label for="omnathStats">Omnath, Locus of Mana:</label>
+                <span id="displayPwr">1</span>/<span id="displayTgh">1</span><br/>
+                <button onclick="omnathPwrPlus();">+1</button>
+                <span>/</span>
+                <button onclick="omnathTghPlus();">+1</button>
+                
+                <button onclick="omnathPlus();">+1/+1</button><br/>
+                <button onclick="omnathPwrMinus();">-1</button>
+                <span>/</span>
+                <button onclick="omnathTghMinus();">-1</button>
+                <span>&nbsp;</span>
+                <button onclick="omnathMinus();">-1/-1</button><br/>
+                <button onclick="clearPwr();">↻ Pwr</button>
+                <button onclick="clearTgh();">↻ Tgh</button>
+                <button onclick="clearPwrTgh();">↻ Pwr/Tgh</button>
+            </div>
+        </div> 
+
+
+
+
+    
+    </body>
+</html>
