@@ -100,9 +100,9 @@
                 let checkboxBloom = document.getElementById("vernalBloomBox");
                 if(checkboxBloom.checked){vernalBloom = true;}
                 else{vernalBloom = false;}}
-            function checkNissaWhoShakes(){
-                let checkboxBloom = document.getElementById("nissaWhoShakesBox");
-                if(nissaWhoShakesBox.checked){nissaWhoShakes = true;}
+             function checkNissaWhoShakes(){
+                let checkboxNissa = document.getElementById("nissaWhoShakesBox");
+                if(checkboxNissa.checked){nissaWhoShakes = true;}
                 else{nissaWhoShakes = false;}}
             function checkYavimaya(){
                 let checkboxYavimaya = document.getElementById("yavimayaBox");
@@ -189,7 +189,8 @@
                 omnathStats();} // +1 Omnath power/toughness.
             function nykthos(){ // Adds X mana, X = devotion to green.
                 tempMana += devotion;
-                if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana++;}
+                if(yavimaya&&vernalBloom&&nissaWhoShakes){tempMana+=2;}
+                else if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana+=1;}
                 if(vorinclex){tempMana++;}
                 if(cagedSun){tempMana++;}
                 if(zendikarResurgent){tempMana++}
@@ -201,7 +202,8 @@
                 omnathStats();} // +X Omnath power/toughness, X = # of devotion.
             function itlimoc(){ // Add X mana, X = # of creatures.
                 tempMana += creatures;
-                if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana++;}
+                if(yavimaya&&vernalBloom&&nissaWhoShakes){tempMana+=2;}
+                else if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana+=1;}
                 if(vorinclex){tempMana++;}
                 if(cagedSun){tempMana++;}
                 if(zendikarResurgent){tempMana++}
