@@ -27,6 +27,7 @@
             var vorinclex = false;         // +1 for lands.
             var cagedSun = false;          // +1 for lands.
             var vernalBloom = false;       // +1 for forests.
+            var nissaWhoShakes = false;    // +1 for forests.
             var yavimaya = false           // ^^ Changes all lands into forests. (See Vernal Bloom)
             var zendikarResurgent = false; // +1 for lands.
             var virtueOfStrength = false;  // +3 for basic lands.
@@ -99,6 +100,10 @@
                 let checkboxBloom = document.getElementById("vernalBloomBox");
                 if(checkboxBloom.checked){vernalBloom = true;}
                 else{vernalBloom = false;}}
+            function checkNissaWhoShakes(){
+                let checkboxBloom = document.getElementById("nissaWhoShakesBox");
+                if(checkboxBloom.checked){nissaWhoShakes = true;}
+                else{nissaWhoShakes = false;}}
             function checkYavimaya(){
                 let checkboxYavimaya = document.getElementById("yavimayaBox");
                 if(checkboxYavimaya.checked){yavimaya = true;}
@@ -173,6 +178,7 @@
                 if(vorinclex){tempMana++;}
                 if(cagedSun){tempMana++;}
                 if(vernalBloom){tempMana++;}
+                if(nissaWhoShakes){tempMana++;}
                 if(zendikarResurgent){tempMana++}
                 if(manaReflection){tempMana*=2;}
                 if(virtueOfStrength){tempMana*=3}
@@ -183,7 +189,7 @@
                 omnathStats();} // +1 Omnath power/toughness.
             function nykthos(){ // Adds X mana, X = devotion to green.
                 tempMana += devotion;
-                if(yavimaya&&vernalBloom){tempMana++;}
+                if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana++;}
                 if(vorinclex){tempMana++;}
                 if(cagedSun){tempMana++;}
                 if(zendikarResurgent){tempMana++}
@@ -195,7 +201,7 @@
                 omnathStats();} // +X Omnath power/toughness, X = # of devotion.
             function itlimoc(){ // Add X mana, X = # of creatures.
                 tempMana += creatures;
-                if(yavimaya&&vernalBloom){tempMana++;}
+                if(yavimaya&&(vernalBloom||nissaWhoShakes)){tempMana++;}
                 if(vorinclex){tempMana++;}
                 if(cagedSun){tempMana++;}
                 if(zendikarResurgent){tempMana++}
@@ -504,6 +510,9 @@
 
                 <input type="checkbox" id="vernalBloomBox" name="vernalBloomBox" onchange = "checkVernalBloom()">
                 <label for="vernalBloomBox">Vernal Bloom</label><br/>
+
+                <input type="checkbox" id="nissaWhoShakesBox" name="nissaWhoShakesBox" onchange = "checkNissaWhoShake()">
+                <label for="nissaWhoShakesBox">Nissa Who Shakes the World</label><br/>
 
                 <input type="checkbox" id="manaReflectionBox" name="manaReflectionBox" onchange = "checkManaReflection()">
                 <label for="manaReflectionBox">Mana Reflection</label><br/>
